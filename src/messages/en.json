@@ -841,7 +841,8 @@
       "suspendTitle": "Suspend {name}?",
       "suspendText": "Suspended venues can't take bookings or check-ins.",
       "reinstate": "Reinstate",
-      "reinstateTitle": "Reinstate {name}?"
+      "reinstateTitle": "Reinstate {name}?",
+      "attendanceCsv": "Attendance CSV (30 days)"
     },
     "orgs": {
       "description": "Partner organizations and the staff who manage their venues.",

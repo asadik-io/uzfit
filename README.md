@@ -255,7 +255,9 @@ Defaults are stored per plan version and enforced by the database:
 - Per-request CSP with nonces and `strict-dynamic`, `frame-ancestors 'none'`, HSTS, `nosniff`,
   strict referrer policy, COOP, and a restrictive Permissions-Policy (camera for the scanner only).
 - Venue photos: JPEG/PNG/WebP only (checked by file signature), ≤ 4 MB, stored under
-  `venues/<venue_id>/` by managers of that venue; SVG/HTML are rejected.
+  `venues/<venue_id>/` by managers of that venue; SVG/HTML are rejected. The `venue-media` bucket
+  is public because published venue photos are public; photos in unapproved drafts are reachable
+  only through their unguessable object paths. Private user media is not stored.
 - Admin tools require a TOTP second factor when `admin_mfa_required` is on; every privileged change
   is audited with actor, reason, and request ID.
 - No medical data, card details, or identity documents are collected.

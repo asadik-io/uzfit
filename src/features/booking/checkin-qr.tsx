@@ -94,7 +94,7 @@ export function CheckinQr({ bookingId }: { bookingId: string }) {
     const tick = () => {
       const left = Math.max(shown.expiresAt - Date.now(), 0);
       setRemaining(left);
-      if (left <= 1_000 && document.visibilityState === "visible") {
+      if (left <= 1_000 && document.visibilityState === "visible" && !requesting.current) {
         if (autoRefreshes.current < MAX_AUTO_REFRESHES) {
           autoRefreshes.current += 1;
           issue(false);

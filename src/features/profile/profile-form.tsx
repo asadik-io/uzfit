@@ -13,7 +13,7 @@ import { Field, fieldAria, Input, NativeSelect } from "@/components/ui/form-cont
 import type { DomainErrorCode } from "@/lib/errors";
 import { usePathname, useRouter } from "@/lib/i18n/navigation";
 import { isLocale, type Locale, locales } from "@/lib/i18n/routing";
-import { normalizePhone } from "@/lib/phone";
+import { formatPhone, normalizePhone } from "@/lib/phone";
 import { clientDisplayName } from "@/lib/validation/client";
 import { updateProfileAction } from "./actions";
 
@@ -56,7 +56,8 @@ export function ProfileForm({ initial }: { initial: { displayName: string; phone
         }
         return;
       }
-      const normalized = values.phone.trim() === "" ? "" : (normalizePhone(values.phone) ?? values.phone);
+      const e164 = values.phone.trim() === "" ? null : normalizePhone(values.phone);
+      const normalized = e164 ? formatPhone(e164) : values.phone.trim();
       form.reset({ ...values, phone: normalized });
       toast.success(t("profile.saved"));
       if (values.locale !== currentLocale && isLocale(values.locale)) {

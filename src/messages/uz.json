@@ -841,7 +841,8 @@
       "suspendTitle": "{name} toʻxtatilsinmi?",
       "suspendText": "Toʻxtatilgan maskan bronlar va kirishlarni qabul qilmaydi.",
       "reinstate": "Qayta tiklash",
-      "reinstateTitle": "{name} qayta tiklansinmi?"
+      "reinstateTitle": "{name} qayta tiklansinmi?",
+      "attendanceCsv": "Qatnashuv, CSV (30 kun)"
     },
     "orgs": {
       "description": "Hamkor tashkilotlar va ularning maskanlarini boshqaradigan xodimlar.",

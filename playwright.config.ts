@@ -9,6 +9,7 @@ const executablePath = process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE;
 
 export default defineConfig({
   testDir: "tests/e2e",
+  globalSetup: "./tests/e2e/support/global-setup.ts",
   // The journeys share one database; run them one at a time for deterministic state.
   fullyParallel: false,
   workers: 1,

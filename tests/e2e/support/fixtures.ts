@@ -120,7 +120,7 @@ export async function createSession(options: {
     if (!venue) {
       throw new Error(`No active activity at ${options.venueSlug}`);
     }
-    const start =
+    const base =
       options.startsInMinutes !== undefined
         ? `date_trunc('minute', now()) + make_interval(mins => ${Math.round(options.startsInMinutes)})`
         : `($4::date + $5::time) at time zone 'Asia/Tashkent'`;
@@ -128,12 +128,24 @@ export async function createSession(options: {
     if (options.startsInMinutes === undefined) {
       params.push(options.date, options.time);
     }
-    const { rows } = await db.query<{ id: string; starts_at: Date }>(
-      `insert into sessions (venue_id, activity_id, starts_at, ends_at, capacity)
-       values ($1, $2, ${start}, ${start} + make_interval(mins => ${options.durationMinutes ?? 60}), $3)
-       returning id, starts_at`,
-      params,
-    );
+    // Earlier runs may already hold this start time for the activity (one scheduled session per
+    // activity and start); move forward minute by minute until a free slot is found.
+    let rows: Array<{ id: string; starts_at: Date }> = [];
+    for (let shift = 0; shift < 30 && rows.length === 0; shift += 1) {
+      const start = `(${base} + make_interval(mins => ${shift}))`;
+      try {
+        ({ rows } = await db.query<{ id: string; starts_at: Date }>(
+          `insert into sessions (venue_id, activity_id, starts_at, ends_at, capacity)
+           values ($1, $2, ${start}, ${start} + make_interval(mins => ${options.durationMinutes ?? 60}), $3)
+           returning id, starts_at`,
+          params,
+        ));
+      } catch (error) {
+        if ((error as { code?: string }).code !== "23505") {
+          throw error;
+        }
+      }
+    }
     const row = rows[0]!;
     return { id: row.id, venueId: venue.id, startsAt: new Date(row.starts_at) };
   });

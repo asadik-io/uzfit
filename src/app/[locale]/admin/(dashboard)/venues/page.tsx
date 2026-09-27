@@ -92,6 +92,13 @@ export default async function AdminVenuesPage({ params }: PageProps<"/[locale]/a
                   </td>
                   <td className="p-3">
                     <div className="flex flex-wrap gap-2">
+                      <a
+                        href={`/api/partner/attendance?${new URLSearchParams({ venue: venue.id, locale })}`}
+                        className="inline-flex h-9 items-center rounded-lg px-3 text-sm font-medium text-primary hover:bg-muted"
+                        download
+                      >
+                        {t("admin.venues.attendanceCsv")}
+                      </a>
                       {venue.publication_status === "unpublished" ? (
                         <ActionDialog
                           trigger={t("admin.venues.publish")}
