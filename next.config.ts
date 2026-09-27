@@ -14,6 +14,13 @@ const securityHeaders = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  experimental: {
+    serverActions: {
+      // Venue photos are limited to 4 MB (checked again in the upload action); this leaves room for
+      // multipart overhead and stays below the Vercel request body limit.
+      bodySizeLimit: "4.5mb",
+    },
+  },
   async headers() {
     return [
       { source: "/:path*", headers: securityHeaders },
