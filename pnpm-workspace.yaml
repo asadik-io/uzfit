@@ -1,8 +1,8 @@
 # These packages ship prebuilt platform binaries through optional dependencies,
 # so their install scripts are not required.
 ignoredBuiltDependencies:
-  - '@parcel/watcher'
-  - '@swc/core'
+  - "@parcel/watcher"
+  - "@swc/core"
   - esbuild
   - sharp
   - unrs-resolver

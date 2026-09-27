@@ -30,7 +30,10 @@ self.addEventListener("activate", (event) => {
 });
 
 function isStaticAsset(url) {
-  return url.origin === self.location.origin && (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/"));
+  return (
+    url.origin === self.location.origin &&
+    (url.pathname.startsWith("/_next/static/") || url.pathname.startsWith("/icons/"))
+  );
 }
 
 self.addEventListener("fetch", (event) => {
