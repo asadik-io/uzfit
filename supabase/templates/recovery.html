@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<body style="margin:0;padding:24px;background:#F8FAFC;color:#0F172A;font-family:Inter,Arial,Helvetica,sans-serif;">
+{{ $l := printf "%v" .Data.locale }}
+<div style="max-width:480px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;border:1px solid #E2E8F0;">
+  <p style="margin:0 0 20px;font-size:22px;font-weight:800;color:#047857;">UzFit</p>
+  {{ if eq $l "ru" }}
+  <h1 style="margin:0 0 12px;font-size:18px;">Сброс пароля</h1>
+  <p style="margin:0 0 20px;line-height:1.5;">Нажмите кнопку ниже, чтобы задать новый пароль. Ссылка действует ограниченное время.</p>
+  <p style="margin:0 0 20px;"><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=recovery&amp;redirect_to={{ .RedirectTo }}" style="display:inline-block;background:#047857;color:#FFFFFF;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px;">Задать новый пароль</a></p>
+  <p style="margin:0;color:#475569;font-size:13px;line-height:1.5;">Если вы не запрашивали сброс пароля, проигнорируйте это письмо — пароль не изменится.</p>
+  {{ else if eq $l "en" }}
+  <h1 style="margin:0 0 12px;font-size:18px;">Reset your password</h1>
+  <p style="margin:0 0 20px;line-height:1.5;">Select the button below to choose a new password. The link expires after a limited time.</p>
+  <p style="margin:0 0 20px;"><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=recovery&amp;redirect_to={{ .RedirectTo }}" style="display:inline-block;background:#047857;color:#FFFFFF;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px;">Choose a new password</a></p>
+  <p style="margin:0;color:#475569;font-size:13px;line-height:1.5;">If you did not request a password reset, ignore this email — your password will not change.</p>
+  {{ else }}
+  <h1 style="margin:0 0 12px;font-size:18px;">Parolni tiklash</h1>
+  <p style="margin:0 0 20px;line-height:1.5;">Yangi parol oʻrnatish uchun quyidagi tugmani bosing. Havola cheklangan vaqt amal qiladi.</p>
+  <p style="margin:0 0 20px;"><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=recovery&amp;redirect_to={{ .RedirectTo }}" style="display:inline-block;background:#047857;color:#FFFFFF;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px;">Yangi parol oʻrnatish</a></p>
+  <p style="margin:0;color:#475569;font-size:13px;line-height:1.5;">Agar parolni tiklashni soʻramagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring — parolingiz oʻzgarmaydi.</p>
+  {{ end }}
+</div>
+</body>
+</html>

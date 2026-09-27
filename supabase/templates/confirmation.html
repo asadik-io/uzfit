@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<body style="margin:0;padding:24px;background:#F8FAFC;color:#0F172A;font-family:Inter,Arial,Helvetica,sans-serif;">
+{{ $l := printf "%v" .Data.locale }}
+<div style="max-width:480px;margin:0 auto;background:#FFFFFF;border-radius:16px;padding:32px;border:1px solid #E2E8F0;">
+  <p style="margin:0 0 20px;font-size:22px;font-weight:800;color:#047857;">UzFit</p>
+  {{ if eq $l "ru" }}
+  <h1 style="margin:0 0 12px;font-size:18px;">Подтвердите адрес электронной почты</h1>
+  <p style="margin:0 0 20px;line-height:1.5;">Нажмите кнопку ниже, чтобы активировать аккаунт UzFit.</p>
+  <p style="margin:0 0 20px;"><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=email&amp;redirect_to={{ .RedirectTo }}" style="display:inline-block;background:#047857;color:#FFFFFF;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px;">Подтвердить почту</a></p>
+  <p style="margin:0;color:#475569;font-size:13px;line-height:1.5;">Если вы не регистрировались в UzFit, просто проигнорируйте это письмо.</p>
+  {{ else if eq $l "en" }}
+  <h1 style="margin:0 0 12px;font-size:18px;">Confirm your email address</h1>
+  <p style="margin:0 0 20px;line-height:1.5;">Select the button below to activate your UzFit account.</p>
+  <p style="margin:0 0 20px;"><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=email&amp;redirect_to={{ .RedirectTo }}" style="display:inline-block;background:#047857;color:#FFFFFF;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px;">Confirm email</a></p>
+  <p style="margin:0;color:#475569;font-size:13px;line-height:1.5;">If you did not sign up for UzFit, you can ignore this email.</p>
+  {{ else }}
+  <h1 style="margin:0 0 12px;font-size:18px;">Elektron pochtangizni tasdiqlang</h1>
+  <p style="margin:0 0 20px;line-height:1.5;">UzFit hisobingizni faollashtirish uchun quyidagi tugmani bosing.</p>
+  <p style="margin:0 0 20px;"><a href="{{ .SiteURL }}/auth/callback?token_hash={{ .TokenHash }}&amp;type=email&amp;redirect_to={{ .RedirectTo }}" style="display:inline-block;background:#047857;color:#FFFFFF;text-decoration:none;font-weight:600;padding:12px 20px;border-radius:10px;">Pochtani tasdiqlash</a></p>
+  <p style="margin:0;color:#475569;font-size:13px;line-height:1.5;">Agar siz UzFit’da roʻyxatdan oʻtmagan boʻlsangiz, bu xatni eʼtiborsiz qoldiring.</p>
+  {{ end }}
+</div>
+</body>
+</html>
