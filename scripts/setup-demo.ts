@@ -76,11 +76,21 @@ const USERS = [
 
 type UserKey = (typeof USERS)[number]["key"];
 
+/** Fails on an API error; returns the data (which may be null for writes without a select). */
 function check<T>(result: { data: T; error: { message: string } | null }, what: string): T {
   if (result.error) {
     fatal(`${what}: ${result.error.message}`);
   }
   return result.data;
+}
+
+/** Like check(), but also requires data to be present. */
+function must<T>(result: { data: T | null; error: { message: string } | null }, what: string): T {
+  const data = check(result, what);
+  if (data === null) {
+    fatal(`${what}: no data returned`);
+  }
+  return data;
 }
 
 async function ensureUsers(): Promise<Record<UserKey, string>> {
@@ -173,7 +183,10 @@ async function memberClient(email: string) {
   const client = createClient<Database>(url!, publishableKey!, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
-  check(await client.auth.signInWithPassword({ email, password }), `sign in ${email}`);
+  const { error } = await client.auth.signInWithPassword({ email, password });
+  if (error) {
+    fatal(`sign in ${email}: ${error.message}`);
+  }
   return client;
 }
 
@@ -242,7 +255,7 @@ async function ensureBookings(ids: Record<UserKey, string>) {
   for (const [index, [day, session]] of history.entries()) {
     const starts = new Date(session.starts_at);
     const state = index === 2 ? "no_show" : "checked_in";
-    const inserted = check(
+    const inserted = must(
       await admin
         .from("bookings")
         .insert({
