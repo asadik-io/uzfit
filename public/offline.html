@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="uz">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#047857" />
+    <title>UzFit — Offline</title>
+    <style>
+      :root { color-scheme: light; }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        background: #f8fafc;
+        color: #0f172a;
+        font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+        line-height: 1.5;
+      }
+      main { max-width: 28rem; width: 100%; text-align: center; }
+      img { width: 64px; height: 64px; border-radius: 18px; }
+      h1 { font-size: 1.5rem; margin: 16px 0 8px; }
+      p { margin: 0 0 12px; color: #475569; }
+      section { border-top: 1px solid #e2e8f0; padding-top: 12px; margin-top: 12px; }
+      h2 { font-size: 1rem; margin: 0 0 4px; color: #0f172a; }
+      a {
+        display: inline-block;
+        margin-top: 16px;
+        padding: 12px 20px;
+        border-radius: 12px;
+        background: #047857;
+        color: #fff;
+        font-weight: 600;
+        text-decoration: none;
+      }
+      a:focus-visible { outline: 3px solid #bef264; outline-offset: 2px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <img src="/icons/icon-192.png" alt="" />
+      <h1>Internet aloqasi yoʻq</h1>
+      <p>Bron qilish va kirishni qayd etish uchun internet kerak. Aloqa tiklangach, qayta urinib koʻring.</p>
+      <section lang="ru">
+        <h2>Нет подключения к интернету</h2>
+        <p>Для записи и отметки о посещении нужен интернет. Попробуйте снова, когда связь восстановится.</p>
+      </section>
+      <section lang="en">
+        <h2>You're offline</h2>
+        <p>Booking and check-in need an internet connection. Try again once you're back online.</p>
+      </section>
+      <a href="/">Qayta urinish · Повторить · Try again</a>
+    </main>
+  </body>
+</html>

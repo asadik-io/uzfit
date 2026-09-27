@@ -30,7 +30,6 @@ export async function generateMetadata({ params }: LayoutProps<"/[locale]">): Pr
     title: { default: t("title"), template: "%s · UzFit" },
     description: t("description"),
     applicationName: "UzFit",
-    manifest: "/manifest.webmanifest",
     appleWebApp: { capable: true, title: "UzFit", statusBarStyle: "default" },
     formatDetection: { telephone: false },
   };
