@@ -85,12 +85,12 @@ function check<T>(result: { data: T; error: { message: string } | null }, what: 
 }
 
 /** Like check(), but also requires data to be present. */
-function must<T>(result: { data: T | null; error: { message: string } | null }, what: string): T {
+function must<T>(result: { data: T; error: { message: string } | null }, what: string): NonNullable<T> {
   const data = check(result, what);
-  if (data === null) {
+  if (data === null || data === undefined) {
     fatal(`${what}: no data returned`);
   }
-  return data;
+  return data as NonNullable<T>;
 }
 
 async function ensureUsers(): Promise<Record<UserKey, string>> {
@@ -113,20 +113,23 @@ async function ensureUsers(): Promise<Record<UserKey, string>> {
   for (const user of USERS) {
     const found = existing.get(user.email);
     if (found) {
-      check(await admin.auth.admin.updateUserById(found, { password }), `update ${user.email}`);
+      const { error } = await admin.auth.admin.updateUserById(found, { password });
+      if (error) {
+        fatal(`update ${user.email}: ${error.message}`);
+      }
       ids[user.key] = found;
       continue;
     }
-    const created = check(
-      await admin.auth.admin.createUser({
-        email: user.email,
-        password,
-        email_confirm: true,
-        user_metadata: { display_name: user.name, locale: user.locale },
-      }),
-      `create ${user.email}`,
-    );
-    ids[user.key] = created.user!.id;
+    const { data: created, error } = await admin.auth.admin.createUser({
+      email: user.email,
+      password,
+      email_confirm: true,
+      user_metadata: { display_name: user.name, locale: user.locale },
+    });
+    if (error || !created.user) {
+      fatal(`create ${user.email}: ${error?.message ?? "no user returned"}`);
+    }
+    ids[user.key] = created.user.id;
   }
   return ids;
 }
