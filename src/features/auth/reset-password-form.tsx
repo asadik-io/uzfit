@@ -46,7 +46,13 @@ export function ResetPasswordForm() {
   return (
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       <FormError code={serverError} />
-      <Field id="password" label={t("newPassword")} hint={t("passwordHint")} error={fieldError(errors.password)} required>
+      <Field
+        id="password"
+        label={t("newPassword")}
+        hint={t("passwordHint")}
+        error={fieldError(errors.password)}
+        required
+      >
         <Input
           {...fieldAria("password", errors.password, true)}
           type="password"

@@ -149,9 +149,10 @@ describe("venue cancellation", () => {
     expect(await membershipUsage(w.membershipId)).toEqual({ consumed: 0, reserved: 0 });
     expect(await membershipUsage(attendee.membershipId)).toEqual({ consumed: 1, reserved: 0 });
 
-    const notices = await sql(`select message_key, params ->> 'reason' as reason from public.notifications where user_id = $1`, [
-      w.memberId,
-    ]);
+    const notices = await sql(
+      `select message_key, params ->> 'reason' as reason from public.notifications where user_id = $1`,
+      [w.memberId],
+    );
     expect(notices).toContainEqual({ message_key: "booking_venue_cancelled", reason: "Coach is ill" });
 
     // Idempotent.
@@ -182,7 +183,10 @@ describe("venue cancellation", () => {
     );
 
     await manager.setNow(addMinutes(start, 60));
-    await expectError(manager.rpc("cancel_session", { p_session_id: w.sessionId, p_reason: "Too late" }), "SESSION_ENDED");
+    await expectError(
+      manager.rpc("cancel_session", { p_session_id: w.sessionId, p_reason: "Too late" }),
+      "SESSION_ENDED",
+    );
     expect((await sessionRow(w.sessionId)).status).toBe("scheduled");
   });
 
@@ -229,9 +233,10 @@ describe("no-show finalization", () => {
 
     await job.rpc("reconcile_no_shows", { p_limit: 500 });
     expect(await membershipUsage(w.membershipId)).toEqual({ consumed: 1, reserved: 0 });
-    const notices = await sql(`select count(*)::int as n from public.notifications where user_id = $1 and message_key = 'no_show_recorded'`, [
-      w.memberId,
-    ]);
+    const notices = await sql(
+      `select count(*)::int as n from public.notifications where user_id = $1 and message_key = 'no_show_recorded'`,
+      [w.memberId],
+    );
     expect(notices[0]!.n).toBe(1);
   });
 
@@ -269,7 +274,9 @@ describe("allowance accounting across every transition", () => {
     await cancel(actor, bookings.late!, true);
     expect(await membershipUsage(w.membershipId)).toEqual({ consumed: 1, reserved: 2 });
 
-    await (await Actor.member(manager, now)).rpc("cancel_session", { p_session_id: sessions.venue, p_reason: "Closed" });
+    await (
+      await Actor.member(manager, now)
+    ).rpc("cancel_session", { p_session_id: sessions.venue, p_reason: "Closed" });
     expect(await membershipUsage(w.membershipId)).toEqual({ consumed: 1, reserved: 1 });
 
     const job = await Actor.service(tashkent("2024-05-03 19:00"));

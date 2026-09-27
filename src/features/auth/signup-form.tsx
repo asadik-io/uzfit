@@ -68,7 +68,11 @@ export function SignupForm({ next }: { next?: string }) {
     <form onSubmit={onSubmit} noValidate className="flex flex-col gap-4">
       <FormError code={serverError} />
       <Field id="displayName" label={t("displayName")} error={fieldError(errors.displayName)} required>
-        <Input {...fieldAria("displayName", errors.displayName)} autoComplete="name" {...form.register("displayName")} />
+        <Input
+          {...fieldAria("displayName", errors.displayName)}
+          autoComplete="name"
+          {...form.register("displayName")}
+        />
       </Field>
       <Field id="email" label={t("email")} error={fieldError(errors.email)} required>
         <Input
@@ -79,13 +83,7 @@ export function SignupForm({ next }: { next?: string }) {
           {...form.register("email")}
         />
       </Field>
-      <Field
-        id="password"
-        label={t("password")}
-        hint={t("passwordHint")}
-        error={fieldError(errors.password)}
-        required
-      >
+      <Field id="password" label={t("password")} hint={t("passwordHint")} error={fieldError(errors.password)} required>
         <Input
           {...fieldAria("password", errors.password, true)}
           type="password"

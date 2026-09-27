@@ -17,8 +17,7 @@ import { randomUUID } from "node:crypto";
 import pg from "pg";
 import { expect } from "vitest";
 
-export const DB_URL =
-  process.env.SUPABASE_DB_URL ?? "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
+export const DB_URL = process.env.SUPABASE_DB_URL ?? "postgresql://postgres:postgres@127.0.0.1:54322/postgres";
 
 const clients = new Set<pg.Client>();
 
@@ -121,7 +120,10 @@ export class Actor {
   ): Promise<T[]> {
     const keys = Object.keys(args);
     const call = `select * from public.${fn}(${keys.map((k, i) => `${k} => $${i + 1}`).join(", ")})`;
-    const result = await this.client.query<T>(call, keys.map((k) => serialize(args[k])));
+    const result = await this.client.query<T>(
+      call,
+      keys.map((k) => serialize(args[k])),
+    );
     return result.rows;
   }
 
@@ -336,7 +338,15 @@ export async function createMembership(
     `insert into public.memberships (user_id, plan_version_id, starts_at, ends_at, status, source, grant_reason,
                                      revoked_at, revoke_reason)
      values ($1, $2, $3, $4, $5, 'admin', 'test fixture', $6, $7) returning id`,
-    [userId, planVersionId, startsAt, endsAt, options.status ?? "active", revoked ? new Date() : null, revoked ? "test" : null],
+    [
+      userId,
+      planVersionId,
+      startsAt,
+      endsAt,
+      options.status ?? "active",
+      revoked ? new Date() : null,
+      revoked ? "test" : null,
+    ],
   );
   return row!.id;
 }
@@ -362,10 +372,9 @@ export async function sessionRow(sessionId: string) {
 }
 
 export async function membershipUsage(membershipId: string) {
-  const [row] = await sql<{ consumed: number; reserved: number }>(
-    `select * from private.membership_usage($1)`,
-    [membershipId],
-  );
+  const [row] = await sql<{ consumed: number; reserved: number }>(`select * from private.membership_usage($1)`, [
+    membershipId,
+  ]);
   return row!;
 }
 

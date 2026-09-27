@@ -114,13 +114,19 @@ describe("check-in redemption", () => {
     const staff = await Actor.member(w.receptionist, addMinutes(start, -9.5));
 
     const result = await redeem(staff, `UZFIT1:${token}`, w.venueId);
-    expect(result).toMatchObject({ ok: true, error_code: null, booking_id: w.bookingId, member_display_name: "Test Member" });
+    expect(result).toMatchObject({
+      ok: true,
+      error_code: null,
+      booking_id: w.bookingId,
+      member_display_name: "Test Member",
+    });
 
     const [booking] = await sql<{ state: string }>(`select state from public.bookings where id = $1`, [w.bookingId]);
     expect(booking!.state).toBe("checked_in");
-    const checkins = await sql<{ verified_by: string }>(`select verified_by from public.checkins where booking_id = $1`, [
-      w.bookingId,
-    ]);
+    const checkins = await sql<{ verified_by: string }>(
+      `select verified_by from public.checkins where booking_id = $1`,
+      [w.bookingId],
+    );
     expect(checkins).toEqual([{ verified_by: w.receptionist }]);
     expect(await membershipUsage(w.membershipId)).toEqual({ consumed: 1, reserved: 0 });
 

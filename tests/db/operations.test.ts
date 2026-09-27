@@ -90,13 +90,20 @@ describe("venue drafts and approval", () => {
     await manager.rpc("partner_save_venue_revision", { p_venue_id: id, p_content: draft });
     await manager.rpc("partner_submit_venue_revision", { p_venue_id: id });
     // Submitted drafts are locked until reviewed or withdrawn.
-    await expectError(manager.rpc("partner_save_venue_revision", { p_venue_id: id, p_content: draft }), "REVISION_LOCKED");
+    await expectError(
+      manager.rpc("partner_save_venue_revision", { p_venue_id: id, p_content: draft }),
+      "REVISION_LOCKED",
+    );
 
     const [revision] = await sql<{ id: string }>(
       `select id from public.venue_revisions where venue_id = $1 and status = 'submitted'`,
       [id],
     );
-    await admin.rpc("admin_review_venue_revision", { p_revision_id: revision!.id, p_approve: true, p_note: "Looks good" });
+    await admin.rpc("admin_review_venue_revision", {
+      p_revision_id: revision!.id,
+      p_approve: true,
+      p_note: "Looks good",
+    });
 
     const [venue] = await anon.query<{ publication_status: string; name: { uz: string } }>(
       `select publication_status, name from public.venues where id = $1`,
@@ -105,7 +112,10 @@ describe("venue drafts and approval", () => {
     expect(venue).toMatchObject({ publication_status: "published", name: { uz: "Yangi Zal Pro" } });
     const categories = await anon.query(`select category_id from public.venue_categories where venue_id = $1`, [id]);
     expect(categories).toHaveLength(2);
-    const images = await anon.query<{ storage_path: string }>(`select storage_path from public.venue_images where venue_id = $1`, [id]);
+    const images = await anon.query<{ storage_path: string }>(
+      `select storage_path from public.venue_images where venue_id = $1`,
+      [id],
+    );
     expect(images.map((i) => i.storage_path)).toEqual([draft.images[0]!.path]);
     const openingHours = await anon.query<{ weekday: number; is_closed: boolean }>(
       `select weekday, is_closed from public.venue_opening_hours where venue_id = $1 order by weekday`,
@@ -124,7 +134,9 @@ describe("venue drafts and approval", () => {
     await manager.rpc("partner_save_venue_revision", { p_venue_id: venueId, p_content: content(venueId, "Renamed") });
     await manager.rpc("partner_submit_venue_revision", { p_venue_id: venueId });
     const anon = await Actor.anon(now);
-    const [before] = await anon.query<{ name: { uz: string } }>(`select name from public.venues where id = $1`, [venueId]);
+    const [before] = await anon.query<{ name: { uz: string } }>(`select name from public.venues where id = $1`, [
+      venueId,
+    ]);
     expect(before!.name.uz).toBe("Original Name");
 
     const [revision] = await sql<{ id: string }>(
@@ -140,9 +152,13 @@ describe("venue drafts and approval", () => {
       p_approve: false,
       p_note: "Photo is blurry",
     });
-    const [after] = await anon.query<{ name: { uz: string } }>(`select name from public.venues where id = $1`, [venueId]);
+    const [after] = await anon.query<{ name: { uz: string } }>(`select name from public.venues where id = $1`, [
+      venueId,
+    ]);
     expect(after!.name.uz).toBe("Original Name");
-    const [reviewed] = await sql(`select status, review_note from public.venue_revisions where id = $1`, [revision!.id]);
+    const [reviewed] = await sql(`select status, review_note from public.venue_revisions where id = $1`, [
+      revision!.id,
+    ]);
     expect(reviewed).toEqual({ status: "rejected", review_note: "Photo is blurry" });
   });
 
@@ -165,7 +181,10 @@ describe("venue drafts and approval", () => {
     for (const [field, override] of cases) {
       let detail = "";
       try {
-        await manager.rpc("partner_save_venue_revision", { p_venue_id: venueId, p_content: { ...content(venueId), ...override } });
+        await manager.rpc("partner_save_venue_revision", {
+          p_venue_id: venueId,
+          p_content: { ...content(venueId), ...override },
+        });
       } catch (e) {
         const err = e as { message: string; detail?: string };
         expect(err.message).toBe("INVALID_CONTENT");
@@ -180,7 +199,9 @@ describe("venue status controls", () => {
   it("unpublishes with a reason and optionally releases future reservations", async () => {
     const w = await bookableWorld(now);
     const sessionId = await createSession(w.activityId, tashkent("2024-06-11 18:00"));
-    const { booking_id } = await (await Actor.member(w.memberId, now)).rpcOne<{ booking_id: string }>("create_booking", {
+    const { booking_id } = await (
+      await Actor.member(w.memberId, now)
+    ).rpcOne<{ booking_id: string }>("create_booking", {
       p_session_id: sessionId,
       p_idempotency_key: randomUUID(),
     });
@@ -201,7 +222,9 @@ describe("venue status controls", () => {
     expect(await (await Actor.anon(now)).query(`select id from public.venues where id = $1`, [w.venueId])).toEqual([]);
 
     await admin.rpc("admin_set_venue_status", { p_venue_id: w.venueId, p_action: "reinstate" });
-    expect(await (await Actor.anon(now)).query(`select id from public.venues where id = $1`, [w.venueId])).toHaveLength(1);
+    expect(await (await Actor.anon(now)).query(`select id from public.venues where id = $1`, [w.venueId])).toHaveLength(
+      1,
+    );
   });
 });
 
@@ -245,12 +268,16 @@ describe("sessions", () => {
     await addStaff(w.orgId, managerId, "manager");
     const manager = await Actor.member(managerId, now);
     const sessionId = await createSession(w.activityId, tashkent("2024-06-11 18:00"), { capacity: 3 });
-    await (await Actor.member(w.memberId, now)).rpc("create_booking", {
+    await (
+      await Actor.member(w.memberId, now)
+    ).rpc("create_booking", {
       p_session_id: sessionId,
       p_idempotency_key: randomUUID(),
     });
     const other = await addMember(w.planVersionId, now);
-    await (await Actor.member(other.memberId, now)).rpc("create_booking", {
+    await (
+      await Actor.member(other.memberId, now)
+    ).rpc("create_booking", {
       p_session_id: sessionId,
       p_idempotency_key: randomUUID(),
     });
@@ -267,7 +294,10 @@ describe("sessions", () => {
       sql(`update public.sessions set starts_at = starts_at + interval '1 hour' where id = $1`, [sessionId]),
       "SESSION_TIME_IMMUTABLE",
     );
-    await expectError(sql(`update public.sessions set capacity = 1 where id = $1`, [sessionId]), "CAPACITY_BELOW_OCCUPIED");
+    await expectError(
+      sql(`update public.sessions set capacity = 1 where id = $1`, [sessionId]),
+      "CAPACITY_BELOW_OCCUPIED",
+    );
   });
 
   it("shows staff a minimal roster", async () => {
@@ -275,7 +305,9 @@ describe("sessions", () => {
     const receptionist = await createUser();
     await addStaff(w.orgId, receptionist, "receptionist");
     const sessionId = await createSession(w.activityId, tashkent("2024-06-11 18:00"));
-    await (await Actor.member(w.memberId, now)).rpc("create_booking", {
+    await (
+      await Actor.member(w.memberId, now)
+    ).rpc("create_booking", {
       p_session_id: sessionId,
       p_idempotency_key: randomUUID(),
     });
@@ -294,14 +326,23 @@ describe("plan versions", () => {
     const venueA = await createVenue(org);
     const venueB = await createVenue(org);
     const v1 = await createPlanVersion([venueA]);
-    await expectError(sql(`update public.plan_versions set price_minor = 1 where id = $1`, [v1]), "PLAN_VERSION_IMMUTABLE");
+    await expectError(
+      sql(`update public.plan_versions set price_minor = 1 where id = $1`, [v1]),
+      "PLAN_VERSION_IMMUTABLE",
+    );
     await expectError(
       sql(`insert into public.plan_version_venues (plan_version_id, venue_id) values ($1, $2)`, [v1, venueB]),
       "PLAN_VERSION_IMMUTABLE",
     );
-    await expectError(sql(`delete from public.plan_version_venues where plan_version_id = $1`, [v1]), "PLAN_VERSION_IMMUTABLE");
+    await expectError(
+      sql(`delete from public.plan_version_venues where plan_version_id = $1`, [v1]),
+      "PLAN_VERSION_IMMUTABLE",
+    );
 
-    const [{ plan_id: planId }] = await sql<{ plan_id: string }>(`select plan_id from public.plan_versions where id = $1`, [v1]);
+    const [{ plan_id: planId }] = await sql<{ plan_id: string }>(
+      `select plan_id from public.plan_versions where id = $1`,
+      [v1],
+    );
     const member = await createUser();
     const membership = await admin.rpcOne<{ admin_grant_membership: string }>("admin_grant_membership", {
       p_user_id: member,
@@ -375,14 +416,18 @@ describe("audited admin operations", () => {
       { action: "membership.grant", reason: "Compensation for outage", actor_id: adminId },
       { action: "membership.revoke", reason: "Granted by mistake", actor_id: adminId },
     ]);
-    const notices = await sql(`select message_key from public.notifications where user_id = $1 order by created_at`, [member]);
+    const notices = await sql(`select message_key from public.notifications where user_id = $1 order by created_at`, [
+      member,
+    ]);
     expect(notices.map((n) => n.message_key)).toEqual(["membership_granted", "membership_revoked"]);
   });
 
   it("corrects final booking states only through the audited operation", async () => {
     const w = await bookableWorld(now);
     const sessionId = await createSession(w.activityId, tashkent("2024-06-11 18:00"));
-    const { booking_id } = await (await Actor.member(w.memberId, now)).rpcOne<{ booking_id: string }>("create_booking", {
+    const { booking_id } = await (
+      await Actor.member(w.memberId, now)
+    ).rpcOne<{ booking_id: string }>("create_booking", {
       p_session_id: sessionId,
       p_idempotency_key: randomUUID(),
     });
@@ -403,25 +448,29 @@ describe("audited admin operations", () => {
     const [row] = await sql<{ state: string }>(`select state from public.bookings where id = $1`, [booking_id]);
     expect(row!.state).toBe("checked_in");
     expect(await sql(`select 1 from public.checkins where booking_id = $1`, [booking_id])).toHaveLength(1);
-    const audit = await sql(`select action from public.audit_logs where target_id = $1 and action = 'booking.correct'`, [
-      booking_id,
-    ]);
+    const audit = await sql(
+      `select action from public.audit_logs where target_id = $1 and action = 'booking.correct'`,
+      [booking_id],
+    );
     expect(audit).toHaveLength(1);
   });
 
   it("anonymizes an account while retaining reservations and attendance", async () => {
     const w = await bookableWorld(now);
     const sessionId = await createSession(w.activityId, tashkent("2024-06-11 18:00"));
-    const { booking_id } = await (await Actor.member(w.memberId, now)).rpcOne<{ booking_id: string }>("create_booking", {
+    const { booking_id } = await (
+      await Actor.member(w.memberId, now)
+    ).rpcOne<{ booking_id: string }>("create_booking", {
       p_session_id: sessionId,
       p_idempotency_key: randomUUID(),
     });
     await sql(`update public.profiles set phone_e164 = '+998901112233' where id = $1`, [w.memberId]);
     await admin.rpc("admin_anonymize_user", { p_user_id: w.memberId, p_reason: "Deletion request" });
 
-    const [profile] = await sql(`select display_name, phone_e164, anonymized_at is not null as anonymized from public.profiles where id = $1`, [
-      w.memberId,
-    ]);
+    const [profile] = await sql(
+      `select display_name, phone_e164, anonymized_at is not null as anonymized from public.profiles where id = $1`,
+      [w.memberId],
+    );
     expect(profile).toEqual({ display_name: "", phone_e164: null, anonymized: true });
     const [booking] = await sql<{ state: string }>(`select state from public.bookings where id = $1`, [booking_id]);
     expect(booking!.state).toBe("cancelled_on_time");

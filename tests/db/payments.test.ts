@@ -111,7 +111,9 @@ describe("create_order", () => {
 
   it("refuses unpublished plan versions", async () => {
     const w = await world();
-    await sql(`update public.plan_versions set status = 'retired', retired_at = now() where id = $1`, [w.planVersionId]);
+    await sql(`update public.plan_versions set status = 'retired', retired_at = now() where id = $1`, [
+      w.planVersionId,
+    ]);
     await expectError(createOrder(w.memberId, w.planVersionId), "PLAN_NOT_AVAILABLE");
   });
 });
@@ -169,7 +171,12 @@ describe("apply_payment_event", () => {
     const o = await createOrder(w.memberId, w.planVersionId);
     const lowAmount = await applyEvent({ orderId: o.order_id, status: "succeeded", amount: 100 });
     expect(lowAmount).toMatchObject({ outcome: "rejected", outcome_code: "AMOUNT_MISMATCH", order_status: "pending" });
-    const wrongCurrency = await applyEvent({ orderId: o.order_id, status: "succeeded", currency: "USD", transaction: `t2-${randomUUID()}` });
+    const wrongCurrency = await applyEvent({
+      orderId: o.order_id,
+      status: "succeeded",
+      currency: "USD",
+      transaction: `t2-${randomUUID()}`,
+    });
     expect(wrongCurrency).toMatchObject({ outcome: "rejected", outcome_code: "AMOUNT_MISMATCH" });
     expect(await memberships(w.memberId)).toEqual([]);
     // A verified success with the wrong amount needs a human decision.
@@ -201,7 +208,9 @@ describe("apply_payment_event", () => {
     const lateFailure = await applyEvent({ orderId: o.order_id, status: "failed" });
     expect(latePending).toMatchObject({ outcome: "ignored", outcome_code: "STALE_EVENT", order_status: "paid" });
     expect(lateFailure).toMatchObject({ outcome: "ignored", outcome_code: "STALE_EVENT", order_status: "paid" });
-    const [payment] = await sql<{ status: string }>(`select status from public.payments where order_id = $1`, [o.order_id]);
+    const [payment] = await sql<{ status: string }>(`select status from public.payments where order_id = $1`, [
+      o.order_id,
+    ]);
     expect(payment!.status).toBe("succeeded");
     expect(await memberships(w.memberId)).toHaveLength(1);
   });
@@ -236,7 +245,11 @@ describe("apply_payment_event", () => {
     const orders = [await order(firstOrder.order_id), await order(secondOrder.order_id)];
     expect(orders.map((o) => o.status)).toEqual(["paid", "paid"]);
     expect(orders.filter((o) => o.needs_reconciliation)).toHaveLength(1);
-    expect(await sql(`select 1 from public.payments where order_id = any ($1)`, [[firstOrder.order_id, secondOrder.order_id]])).toHaveLength(2);
+    expect(
+      await sql(`select 1 from public.payments where order_id = any ($1)`, [
+        [firstOrder.order_id, secondOrder.order_id],
+      ]),
+    ).toHaveLength(2);
   });
 
   it("flags a second successful transaction for an already paid order", async () => {
@@ -275,7 +288,9 @@ describe("refunds", () => {
       p_session_id: past,
       p_idempotency_key: randomUUID(),
     });
-    await sql(`update public.bookings set state = 'checked_in', checked_in_at = now() where id = $1`, [attended.booking_id]);
+    await sql(`update public.bookings set state = 'checked_in', checked_in_at = now() where id = $1`, [
+      attended.booking_id,
+    ]);
     const upcoming = await member.rpcOne<{ booking_id: string }>("create_booking", {
       p_session_id: future,
       p_idempotency_key: randomUUID(),
@@ -286,9 +301,10 @@ describe("refunds", () => {
 
     const [m] = await sql<{ status: string }>(`select status from public.memberships where id = $1`, [membership_id]);
     expect(m!.status).toBe("revoked");
-    const states = await sql<{ id: string; state: string }>(`select id, state from public.bookings where user_id = $1`, [
-      w.memberId,
-    ]);
+    const states = await sql<{ id: string; state: string }>(
+      `select id, state from public.bookings where user_id = $1`,
+      [w.memberId],
+    );
     expect(Object.fromEntries(states.map((s) => [s.id, s.state]))).toEqual({
       [attended.booking_id]: "checked_in",
       [upcoming.booking_id]: "cancelled_on_time",
@@ -304,7 +320,11 @@ describe("refunds", () => {
     const o = await createOrder(w.memberId, w.planVersionId);
     await applyEvent({ orderId: o.order_id, status: "succeeded" });
     const partial = await applyEvent({ orderId: o.order_id, status: "refunded", amount: 1_000_000 });
-    expect(partial).toMatchObject({ outcome: "rejected", outcome_code: "PARTIAL_REFUND_UNSUPPORTED", order_status: "paid" });
+    expect(partial).toMatchObject({
+      outcome: "rejected",
+      outcome_code: "PARTIAL_REFUND_UNSUPPORTED",
+      order_status: "paid",
+    });
     expect((await order(o.order_id)).needs_reconciliation).toBe(true);
   });
 

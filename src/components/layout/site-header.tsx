@@ -40,17 +40,20 @@ export async function SiteHeader() {
         <Link href="/" aria-label={t("home")} className="rounded-lg">
           <Logo />
         </Link>
-        <div className="ml-4">
+        <div className="ml-4 hidden md:block">
           <HeaderNav signedIn={Boolean(data)} />
         </div>
-        <div className="ml-auto flex items-center gap-1 sm:gap-2">
+        <div className="ml-auto flex min-w-0 items-center gap-1 sm:gap-2">
           <Suspense fallback={null}>
             <LocaleSwitcher signedIn={Boolean(data)} />
           </Suspense>
           {data ? (
             <>
               <Button asChild variant="ghost" size="icon" className="relative">
-                <Link href="/notifications" aria-label={`${t("notifications")}${data.unread ? ` — ${t("unread", { count: data.unread })}` : ""}`}>
+                <Link
+                  href="/notifications"
+                  aria-label={`${t("notifications")}${data.unread ? ` — ${t("unread", { count: data.unread })}` : ""}`}
+                >
                   <Bell className="size-5" aria-hidden="true" />
                   {data.unread > 0 ? (
                     <span

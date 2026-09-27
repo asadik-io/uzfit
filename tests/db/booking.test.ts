@@ -73,9 +73,10 @@ describe("create_booking", () => {
     const start = tashkent("2024-03-12 09:00");
     const sessionId = await createSession(activityId, start, { durationMinutes: 20 });
     const result = await book(await Actor.member(memberId, now), sessionId);
-    const [row] = await sql<{ checkin_closes_at: Date }>(`select checkin_closes_at from public.bookings where id = $1`, [
-      result.booking_id,
-    ]);
+    const [row] = await sql<{ checkin_closes_at: Date }>(
+      `select checkin_closes_at from public.bookings where id = $1`,
+      [result.booking_id],
+    );
     expect(row!.checkin_closes_at.toISOString()).toBe(addMinutes(start, 20).toISOString());
   });
 
@@ -176,7 +177,9 @@ describe("create_booking", () => {
     it("rejects sessions of venues whose organization is suspended", async () => {
       const w = await bookableWorld(now);
       const sessionId = await createSession(w.activityId, tashkent("2024-03-12 18:00"));
-      await sql(`update public.organizations set status = 'suspended', status_reason = 'test' where id = $1`, [w.orgId]);
+      await sql(`update public.organizations set status = 'suspended', status_reason = 'test' where id = $1`, [
+        w.orgId,
+      ]);
       await expectError(book(await Actor.member(w.memberId, now), sessionId), "SESSION_NOT_BOOKABLE");
     });
   });
@@ -311,9 +314,10 @@ describe("create_booking", () => {
       expect(new Set(errors)).toEqual(new Set(["SESSION_FULL"]));
       const session = await sessionRow(sessionId);
       expect(session.occupied_count).toBe(3);
-      const live = await sql(`select count(*)::int as n from public.bookings where session_id = $1 and state = 'confirmed'`, [
-        sessionId,
-      ]);
+      const live = await sql(
+        `select count(*)::int as n from public.bookings where session_id = $1 and state = 'confirmed'`,
+        [sessionId],
+      );
       expect(live[0]!.n).toBe(3);
     });
 

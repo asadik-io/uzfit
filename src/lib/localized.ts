@@ -22,5 +22,9 @@ export function localized(value: unknown, locale: Locale): string {
   if (uzbek) {
     return uzbek;
   }
-  return Object.values(value).find((text) => typeof text === "string" && text.trim() !== "")?.trim() ?? "";
+  return (
+    Object.values(value)
+      .find((text) => typeof text === "string" && text.trim() !== "")
+      ?.trim() ?? ""
+  );
 }

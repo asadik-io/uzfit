@@ -31,7 +31,9 @@ function fatal(message: string): never {
 }
 
 if (!url || !secretKey || !publishableKey) {
-  fatal("Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY and SUPABASE_SECRET_KEY (see .env.example).");
+  fatal(
+    "Set NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY and SUPABASE_SECRET_KEY (see .env.example).",
+  );
 }
 if (process.env.APP_ENV === "production" || process.env.VERCEL_ENV === "production") {
   fatal("Refusing to create demo accounts in a production environment.");
@@ -296,7 +298,11 @@ async function ensureBookings(ids: Record<UserKey, string>) {
   }
 
   // A full session: a small class tomorrow, filled by two demo members.
-  const full = await upcomingSession("e1000000-0000-4000-8000-000000000004", "ac000000-0000-4000-8000-000000000007", 24);
+  const full = await upcomingSession(
+    "e1000000-0000-4000-8000-000000000004",
+    "ac000000-0000-4000-8000-000000000007",
+    24,
+  );
   if (full) {
     check(await admin.from("sessions").update({ capacity: 2 }).eq("id", full.id), "full session capacity");
     for (const email of ["filler.1@uzfit.test", "filler.2@uzfit.test"]) {

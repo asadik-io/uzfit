@@ -1,15 +1,6 @@
 "use client";
 
-import {
-  Bell,
-  Building2,
-  CalendarCheck,
-  CreditCard,
-  Heart,
-  LogOut,
-  ShieldCheck,
-  UserRound,
-} from "lucide-react";
+import { Bell, Building2, CalendarCheck, CreditCard, Heart, LogOut, ShieldCheck, UserRound } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useRef } from "react";
 import {

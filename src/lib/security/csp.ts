@@ -12,7 +12,12 @@ export function buildContentSecurityPolicy(options: {
   const supabaseOrigin = options.supabaseUrl ? new URL(options.supabaseUrl).origin : "";
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
-    "script-src": ["'self'", `'nonce-${options.nonce}'`, "'strict-dynamic'", ...(options.isDevelopment ? ["'unsafe-eval'"] : [])],
+    "script-src": [
+      "'self'",
+      `'nonce-${options.nonce}'`,
+      "'strict-dynamic'",
+      ...(options.isDevelopment ? ["'unsafe-eval'"] : []),
+    ],
     "style-src": ["'self'", "'unsafe-inline'"],
     "img-src": ["'self'", "data:", "blob:", ...(supabaseOrigin ? [supabaseOrigin] : [])],
     "font-src": ["'self'"],

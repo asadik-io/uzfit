@@ -127,6 +127,9 @@ export type ActionResult<T = undefined> =
   | ({ ok: true } & (T extends undefined ? { data?: undefined } : { data: T }))
   | { ok: false; error: DomainErrorCode; fieldErrors?: Record<string, string> };
 
-export function fail(error: DomainErrorCode, fieldErrors?: Record<string, string>): { ok: false; error: DomainErrorCode; fieldErrors?: Record<string, string> } {
+export function fail(
+  error: DomainErrorCode,
+  fieldErrors?: Record<string, string>,
+): { ok: false; error: DomainErrorCode; fieldErrors?: Record<string, string> } {
   return fieldErrors ? { ok: false, error, fieldErrors } : { ok: false, error };
 }
