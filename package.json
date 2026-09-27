@@ -20,7 +20,7 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:types": "supabase gen types typescript --local --schema public > src/lib/supabase/database.types.ts && prettier --write src/lib/supabase/database.types.ts",
-    "setup:demo": "tsx scripts/setup-demo.ts",
+    "setup:demo": "tsx --env-file-if-exists=.env.local scripts/setup-demo.ts",
     "assets:generate": "tsx scripts/generate-assets.ts",
     "format": "prettier --write .",
     "format:check": "prettier --check ."

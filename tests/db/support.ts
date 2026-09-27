@@ -202,8 +202,12 @@ const GYM_CATEGORY = "ca000000-0000-4000-8000-000000000001";
 export async function createUser(displayName = "Test Member"): Promise<string> {
   const id = randomUUID();
   await sql(
-    `insert into auth.users (id, instance_id, aud, role, email, raw_user_meta_data, email_confirmed_at, created_at, updated_at)
-     values ($1, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', $2, $3, now(), now(), now())`,
+    // GoTrue scans these token columns into strings, so they must be '' rather than NULL.
+    `insert into auth.users (id, instance_id, aud, role, email, encrypted_password, raw_user_meta_data,
+                             email_confirmed_at, created_at, updated_at, confirmation_token, recovery_token,
+                             email_change_token_new, email_change)
+     values ($1, '00000000-0000-0000-0000-000000000000', 'authenticated', 'authenticated', $2, '', $3,
+             now(), now(), now(), '', '', '', '')`,
     [id, `test-${id}@uzfit.test`, JSON.stringify({ display_name: displayName, locale: "uz" })],
   );
   return id;
