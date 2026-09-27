@@ -40,6 +40,7 @@ export function BookSessionDialog(props: BookSessionDialogProps) {
   const [idempotencyKey, setIdempotencyKey] = useState<string | null>(null);
   const [error, setError] = useState<DomainErrorCode | null>(null);
   const [pending, startTransition] = useTransition();
+  const [deadlinePassed, setDeadlinePassed] = useState(false);
 
   const deadline = new Date(new Date(props.startsAt).getTime() - props.freeCancellationMinutes * 60_000);
 
@@ -49,6 +50,10 @@ export function BookSessionDialog(props: BookSessionDialogProps) {
       // One key per confirmation dialog: a retried or double-submitted request replays safely.
       setIdempotencyKey(crypto.randomUUID());
       setError(null);
+      // Informational only; the database applies the rule with its own clock. This runs in an
+      // event handler (dialog opening), not during render.
+      // eslint-disable-next-line react-hooks/purity
+      setDeadlinePassed(Date.now() > deadline.getTime());
     }
   }
 
@@ -107,14 +112,20 @@ export function BookSessionDialog(props: BookSessionDialogProps) {
             </div>
           </div>
         </dl>
-        <Alert
-          variant="info"
-          title={t("booking.freeCancellationUntil", {
-            time: formatDateTime(deadline, locale, props.timeZone, { dateStyle: "medium", timeStyle: "short" }),
-          })}
-        >
-          {t("booking.lateCancellationNote")}
-        </Alert>
+        {deadlinePassed ? (
+          <Alert variant="warning" title={t("booking.noFreeCancellationTitle")}>
+            {t("booking.noFreeCancellationText")}
+          </Alert>
+        ) : (
+          <Alert
+            variant="info"
+            title={t("booking.freeCancellationUntil", {
+              time: formatDateTime(deadline, locale, props.timeZone, { dateStyle: "medium", timeStyle: "short" }),
+            })}
+          >
+            {t("booking.lateCancellationNote")}
+          </Alert>
+        )}
         <p className="text-sm text-muted-foreground">
           {t("booking.visitsAfter", { count: Math.max(props.visitsAvailable - 1, 0) })}
         </p>

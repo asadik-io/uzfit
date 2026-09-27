@@ -7,7 +7,7 @@ import { type ActionResult, fail, toDomainError } from "@/lib/errors";
 import { logEvent, requestId } from "@/lib/request";
 import { createClient } from "@/lib/supabase/server";
 
-const bookInput = z.object({ sessionId: z.uuid(), idempotencyKey: z.uuid() });
+const bookInput = z.object({ sessionId: z.guid(), idempotencyKey: z.uuid() });
 
 /**
  * Reserves a session. The database derives the member from the verified JWT and re-checks every
@@ -40,7 +40,7 @@ export async function bookSessionAction(
   return { ok: true, data: { bookingId: data.booking_id } };
 }
 
-const cancelInput = z.object({ bookingId: z.uuid(), acceptLate: z.boolean() });
+const cancelInput = z.object({ bookingId: z.guid(), acceptLate: z.boolean() });
 
 /**
  * Cancels a booking. Timely cancellation releases the visit; after the deadline the member must
@@ -70,7 +70,7 @@ export async function cancelBookingAction(
   return { ok: true, data: { state: data.booking_state } };
 }
 
-const tokenInput = z.object({ bookingId: z.uuid() });
+const tokenInput = z.object({ bookingId: z.guid() });
 
 /** Issues a fresh 60-second check-in token for the member's own booking. */
 export async function issueCheckinTokenAction(
@@ -89,4 +89,24 @@ export async function issueCheckinTokenAction(
     return fail(toDomainError(error));
   }
   return { ok: true, data: { token: data.token, expiresAt: data.expires_at, serverNow: new Date().toISOString() } };
+}
+
+/** Current state of the member's own booking; polled while a check-in QR code is on screen. */
+export async function getBookingStateAction(bookingId: string): Promise<ActionResult<{ state: string }>> {
+  const parsed = tokenInput.safeParse({ bookingId });
+  if (!parsed.success) {
+    return fail("VALIDATION_FAILED");
+  }
+  if (!(await getViewer())) {
+    return fail("AUTH_REQUIRED");
+  }
+  const supabase = await createClient();
+  const { data, error } = await supabase.from("bookings").select("state").eq("id", parsed.data.bookingId).maybeSingle();
+  if (error) {
+    return fail(toDomainError(error));
+  }
+  if (!data) {
+    return fail("BOOKING_NOT_FOUND");
+  }
+  return { ok: true, data: { state: data.state } };
 }

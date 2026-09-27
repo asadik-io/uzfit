@@ -1,17 +1,35 @@
 import createIntlMiddleware from "next-intl/middleware";
-import type { NextRequest } from "next/server";
-import { routing } from "@/lib/i18n/routing";
+import { type NextRequest, NextResponse } from "next/server";
+import { isLocale, routing } from "@/lib/i18n/routing";
 import { buildContentSecurityPolicy } from "@/lib/security/csp";
 import { refreshSupabaseSession } from "@/lib/supabase/proxy";
 
 const handleLocaleRouting = createIntlMiddleware(routing);
+
+/** Signed-in areas. Pages check the verified user again; this only produces a proper redirect. */
+const PRIVATE_SECTIONS = new Set([
+  "bookings",
+  "membership",
+  "profile",
+  "favorites",
+  "notifications",
+  "checkout",
+  "partner",
+  "admin",
+]);
+
+function privateSectionLocale(pathname: string): string | null {
+  const [, locale, section] = pathname.split("/");
+  return locale && isLocale(locale) && section && PRIVATE_SECTIONS.has(section) ? locale : null;
+}
 
 /**
  * Runs before every page request:
  *  1. assigns a request ID (forwarded to the database for audit correlation),
  *  2. creates a CSP nonce,
  *  3. refreshes the Supabase session (verified with getClaims) and forwards fresh cookies,
- *  4. applies locale routing.
+ *  4. redirects signed-out visitors away from private sections (a real 307 even for streamed pages),
+ *  5. applies locale routing.
  * Authorization is never decided here: every page, Server Action, and database function checks it.
  */
 export async function proxy(request: NextRequest) {
@@ -31,7 +49,16 @@ export async function proxy(request: NextRequest) {
   request.headers.set("content-security-policy", csp);
 
   const session = await refreshSupabaseSession(request);
-  const response = handleLocaleRouting(request);
+  const privateLocale = privateSectionLocale(request.nextUrl.pathname);
+  const response =
+    privateLocale && !session.authenticated
+      ? NextResponse.redirect(
+          new URL(
+            `/${privateLocale}/login?next=${encodeURIComponent(request.nextUrl.pathname + request.nextUrl.search)}`,
+            request.url,
+          ),
+        )
+      : handleLocaleRouting(request);
 
   for (const { name, value, options } of session.cookies) {
     response.cookies.set(name, value, options);

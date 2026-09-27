@@ -6,7 +6,7 @@ import { getViewer } from "@/lib/auth";
 import { type ActionResult, fail, toDomainError } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 
-const input = z.object({ venueId: z.uuid(), favorite: z.boolean() });
+const input = z.object({ venueId: z.guid(), favorite: z.boolean() });
 
 /** Adds or removes a favorite. RLS restricts rows to the signed-in member and public venues. */
 export async function setFavoriteAction(

@@ -4,6 +4,8 @@ import type { NextRequest } from "next/server";
 export interface SessionRefresh {
   cookies: Array<{ name: string; value: string; options: CookieOptions }>;
   headers: Record<string, string>;
+  /** True when the request carries a verified (and, if needed, refreshed) session. */
+  authenticated: boolean;
 }
 
 /**
@@ -13,7 +15,7 @@ export interface SessionRefresh {
  * on responses that carry auth cookies.
  */
 export async function refreshSupabaseSession(request: NextRequest): Promise<SessionRefresh> {
-  const result: SessionRefresh = { cookies: [], headers: {} };
+  const result: SessionRefresh = { cookies: [], headers: {}, authenticated: false };
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
   if (!url || !key) {
@@ -40,6 +42,7 @@ export async function refreshSupabaseSession(request: NextRequest): Promise<Sess
   });
 
   // Verifies the JWT and refreshes it when it is about to expire.
-  await supabase.auth.getClaims();
+  const { data, error } = await supabase.auth.getClaims();
+  result.authenticated = !error && Boolean(data?.claims?.sub);
   return result;
 }
