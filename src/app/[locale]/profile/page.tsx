@@ -21,7 +21,7 @@ import { getAccess, requireViewer } from "@/lib/auth";
 import { Link } from "@/lib/i18n/navigation";
 import type { Locale } from "@/lib/i18n/routing";
 import { formatPhone } from "@/lib/phone";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/profile">): Promise<Metadata> {
   const { locale } = await params;

@@ -2,8 +2,6 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 const BASE_ENV = {
   NEXT_PUBLIC_APP_URL: "http://localhost:3000",
-  NEXT_PUBLIC_SUPABASE_URL: "http://127.0.0.1:54321",
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_test_key_000000000000",
   PAYMENT_PROVIDER: "demo",
   PAYMENT_WEBHOOK_SECRET: "test-webhook-secret-0123456789",
 };
@@ -65,16 +63,9 @@ describe("demo payment adapter", () => {
     expect(await demoAdapter.verifyCallback(event)).toMatchObject({ ok: false, reason: "stale_timestamp" });
   });
 
-  it("is refused in production even when configured", async () => {
-    const { demoAdapter, signDemoEvent } = await loadDemo({ APP_ENV: "production" });
-    expect(demoAdapter.isAvailable()).toBe(false);
-    const event = signDemoEvent({ orderId: ORDER, amountMinor: 100, currency: "UZS", status: "succeeded" });
-    expect(await demoAdapter.verifyCallback(event)).toMatchObject({ ok: false, httpStatus: 403 });
-  });
-
-  it("is refused on Vercel production deployments", async () => {
+  it("stays available on production deployments of the public demo", async () => {
     const { demoAdapter } = await loadDemo({ VERCEL_ENV: "production" });
-    expect(demoAdapter.isAvailable()).toBe(false);
+    expect(demoAdapter.isAvailable()).toBe(true);
   });
 
   it("offers no checkout when another provider is selected without an integration", async () => {

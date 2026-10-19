@@ -1,9 +1,15 @@
-/** Public URL of an object in the venue-media bucket (the bucket is public; paths are UUIDs). */
+/**
+ * Venue media locations. Seed artwork is served as static files from /public; photos uploaded
+ * through the partner editor live in the demo's memory and are served by /media/[...path].
+ * Seed image ids start with a recognisable marker so the two can be told apart without a lookup.
+ */
+export const SEED_IMAGE_MARKER = "5eed";
+
 export function venueMediaUrl(path: string): string {
-  const base = process.env.NEXT_PUBLIC_SUPABASE_URL ?? "";
   const safePath = path
     .split("/")
     .map((segment) => encodeURIComponent(segment))
     .join("/");
-  return `${base}/storage/v1/object/public/venue-media/${safePath}`;
+  const file = path.slice(path.lastIndexOf("/") + 1);
+  return file.startsWith(SEED_IMAGE_MARKER) ? `/demo/media/${safePath}` : `/media/${safePath}`;
 }

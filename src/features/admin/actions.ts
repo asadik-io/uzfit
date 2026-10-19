@@ -5,9 +5,9 @@ import { z } from "zod";
 import { getViewer } from "@/lib/auth";
 import { type ActionResult, type DomainErrorCode, fail, toDomainError } from "@/lib/errors";
 import { logEvent, requestId } from "@/lib/request";
-import { createAdminClient, hasAdminClient } from "@/lib/supabase/admin";
-import type { Json } from "@/lib/supabase/database.types";
-import { createClient } from "@/lib/supabase/server";
+import { createAdminClient, hasAdminClient } from "@/lib/db/admin";
+import type { Json } from "@/lib/db/database.types";
+import { createClient } from "@/lib/db/server";
 
 /**
  * Admin Server Actions. Each one validates its input and calls a database function that

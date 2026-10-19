@@ -3,8 +3,8 @@ import { cache } from "react";
 import { QueryError } from "@/features/discovery/queries";
 import type { Access } from "@/lib/auth";
 import type { LocalizedText } from "@/lib/localized";
-import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/db/server";
+import type { Database } from "@/lib/db/database.types";
 
 export type OrgRole = Database["public"]["Enums"]["org_role"];
 

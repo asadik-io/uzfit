@@ -10,7 +10,8 @@ import { requireViewer } from "@/lib/auth";
 import { Link } from "@/lib/i18n/navigation";
 import type { Locale } from "@/lib/i18n/routing";
 import type { LocalizedText } from "@/lib/localized";
-import { createClient } from "@/lib/supabase/server";
+import type { LooseRow } from "@/lib/db/client";
+import { createClient } from "@/lib/db/server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/favorites">): Promise<Metadata> {
   const { locale } = await params;
@@ -36,7 +37,9 @@ export default async function FavoritesPage({ params }: PageProps<"/[locale]/fav
     throw new Error("favorites_query_failed");
   }
   // Venues that are no longer public are hidden by RLS and drop out of the list.
-  const venues = (data ?? []).map((row) => row.venue).filter((v): v is NonNullable<typeof v> => Boolean(v));
+  const venues = (data ?? [])
+    .map((row) => row.venue as LooseRow<"venues"> | null)
+    .filter((v): v is LooseRow<"venues"> => Boolean(v));
 
   return (
     <div className="container-page">

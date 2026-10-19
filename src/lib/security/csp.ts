@@ -1,15 +1,14 @@
 /**
  * Builds the per-request Content-Security-Policy. Scripts must carry the request nonce (Next.js
  * applies it to its own scripts automatically). Inline style attributes are allowed because
- * accessible UI primitives position popovers with them; they cannot execute code.
+ * accessible UI primitives position popovers with them; they cannot execute code. Everything the
+ * demo loads is same-origin, so no external hosts are listed.
  */
 export function buildContentSecurityPolicy(options: {
   nonce: string;
-  supabaseUrl?: string;
   isDevelopment: boolean;
   upgradeInsecure: boolean;
 }): string {
-  const supabaseOrigin = options.supabaseUrl ? new URL(options.supabaseUrl).origin : "";
   const directives: Record<string, string[]> = {
     "default-src": ["'self'"],
     "script-src": [
@@ -19,9 +18,9 @@ export function buildContentSecurityPolicy(options: {
       ...(options.isDevelopment ? ["'unsafe-eval'"] : []),
     ],
     "style-src": ["'self'", "'unsafe-inline'"],
-    "img-src": ["'self'", "data:", "blob:", ...(supabaseOrigin ? [supabaseOrigin] : [])],
+    "img-src": ["'self'", "data:", "blob:"],
     "font-src": ["'self'"],
-    "connect-src": ["'self'", ...(supabaseOrigin ? [supabaseOrigin] : [])],
+    "connect-src": ["'self'"],
     "media-src": ["'self'", "blob:"],
     "worker-src": ["'self'"],
     "manifest-src": ["'self'"],

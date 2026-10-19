@@ -5,7 +5,7 @@ import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 import { getAccess, getViewer } from "@/lib/auth";
 import { Link } from "@/lib/i18n/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 import { HeaderNav } from "./header-nav";
 import { LocaleSwitcher } from "./locale-switcher";
 import { UserMenu } from "./user-menu";

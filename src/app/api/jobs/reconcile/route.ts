@@ -3,7 +3,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { serverEnv } from "@/lib/env";
 import { reconcilePayments } from "@/lib/payments/service";
 import { logEvent } from "@/lib/request";
-import { createAdminClient, hasAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, hasAdminClient } from "@/lib/db/admin";
 
 export const maxDuration = 60;
 

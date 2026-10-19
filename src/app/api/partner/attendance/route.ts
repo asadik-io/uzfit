@@ -7,7 +7,7 @@ import { getViewer } from "@/lib/auth";
 import { toCsv } from "@/lib/csv";
 import { isLocale, type Locale } from "@/lib/i18n/routing";
 import { localized } from "@/lib/localized";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 function isoLocal(value: string | null, timeZone: string): string {
   if (!value) {

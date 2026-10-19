@@ -3,8 +3,8 @@ import { cache } from "react";
 import type { Locale } from "@/lib/i18n/routing";
 import { DEFAULT_TIMEZONE } from "@/lib/i18n/routing";
 import type { LocalizedText } from "@/lib/localized";
-import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/db/server";
+import type { Database } from "@/lib/db/database.types";
 import { localDayRange } from "@/lib/time";
 
 export const PAGE_SIZE = 12;

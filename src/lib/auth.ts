@@ -2,8 +2,8 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { cache } from "react";
 import type { Locale } from "@/lib/i18n/routing";
-import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/db/server";
+import type { Database } from "@/lib/db/database.types";
 
 export interface Viewer {
   id: string;
@@ -89,7 +89,7 @@ export async function requireStaff(locale: Locale, next: string): Promise<{ view
   return { viewer, access };
 }
 
-/** Admin pages additionally require a verified second factor when the operator enables it. */
+/** Admin pages require the admin role on an active account. */
 export async function requireAdmin(locale: Locale, next: string): Promise<{ viewer: Viewer; access: Access }> {
   const viewer = await requireViewer(locale, next);
   const access = await getAccess();
@@ -97,7 +97,7 @@ export async function requireAdmin(locale: Locale, next: string): Promise<{ view
     redirect(`/${locale}`);
   }
   if (!access.adminAuthorized) {
-    redirect(`/${locale}/admin/mfa?next=${encodeURIComponent(next)}`);
+    redirect(`/${locale}`);
   }
   return { viewer, access };
 }

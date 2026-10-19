@@ -9,8 +9,8 @@ import { type ActionResult, type DomainErrorCode, fail, isDomainErrorCode, toDom
 import { IMAGE_MIME, sniffImageType } from "@/lib/image-type";
 import { normalizePhone } from "@/lib/phone";
 import { logEvent, requestId } from "@/lib/request";
-import type { Json } from "@/lib/supabase/database.types";
-import { createClient } from "@/lib/supabase/server";
+import type { Json } from "@/lib/db/database.types";
+import { createClient } from "@/lib/db/server";
 import { isDateString } from "@/lib/time";
 import { slugSchema, type VenueContent, venueContentSchema } from "./venue-content";
 
@@ -19,7 +19,7 @@ const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
 interface DbError {
   code?: string;
   message?: string;
-  details?: string;
+  details?: string | null;
 }
 
 /** Domain error plus the offending field reported by the database (INVALID_CONTENT detail). */

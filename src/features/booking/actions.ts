@@ -5,7 +5,7 @@ import { z } from "zod";
 import { getViewer } from "@/lib/auth";
 import { type ActionResult, fail, toDomainError } from "@/lib/errors";
 import { logEvent, requestId } from "@/lib/request";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 const bookInput = z.object({ sessionId: z.guid(), idempotencyKey: z.uuid() });
 

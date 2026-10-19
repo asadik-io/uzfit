@@ -6,7 +6,6 @@ import { buildContentSecurityPolicy } from "@/lib/security/csp";
 describe("content security policy", () => {
   const policy = buildContentSecurityPolicy({
     nonce: "abc123",
-    supabaseUrl: "https://project.supabase.co",
     isDevelopment: false,
     upgradeInsecure: true,
   });
@@ -24,8 +23,9 @@ describe("content security policy", () => {
     expect(policy).toContain("upgrade-insecure-requests");
   });
 
-  it("limits network access to the app and Supabase", () => {
-    expect(policy).toContain("connect-src 'self' https://project.supabase.co");
+  it("limits network access to the app itself", () => {
+    expect(policy).toContain("connect-src 'self';");
+    expect(policy).not.toContain("https://");
   });
 });
 

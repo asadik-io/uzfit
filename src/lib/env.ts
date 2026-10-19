@@ -2,20 +2,21 @@ import "server-only";
 import { z } from "zod";
 
 /**
- * Server environment, validated once per process. Secrets are read only here and in the modules
- * that need them (Supabase admin client, payment adapters, job authentication), never in client
- * bundles or NEXT_PUBLIC_* variables.
+ * Server environment, validated once per process. The demo runs without any external service,
+ * so every variable has a safe default; secrets are read only here and in the modules that need
+ * them (payment adapters, job authentication), never in client bundles.
  */
 const schema = z.object({
-  NEXT_PUBLIC_APP_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_URL: z.url(),
-  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: z.string().min(20),
-  SUPABASE_SECRET_KEY: z.string().min(20).optional(),
+  NEXT_PUBLIC_APP_URL: z.url().default("http://localhost:3000"),
   PAYMENT_PROVIDER: z.enum(["demo", "payme", "click", "none"]).default("demo"),
   PAYMENT_MERCHANT_ID: z.string().optional(),
   PAYMENT_API_SECRET: z.string().optional(),
   PAYMENT_WEBHOOK_SECRET: z.string().min(16).optional(),
   CRON_SECRET: z.string().min(16).optional(),
+  /** Shared password of the demo accounts (shown on the sign-in page). */
+  DEMO_PASSWORD: z.string().min(8).optional(),
+  /** Signs the session cookie; any long random string. */
+  DEMO_SESSION_SECRET: z.string().min(16).optional(),
   APP_ENV: z.enum(["development", "preview", "production"]).optional(),
   VERCEL_ENV: z.string().optional(),
 });
@@ -48,7 +49,7 @@ export function serverEnv(): ServerEnv {
   return cached;
 }
 
-/** True when the core public configuration exists, so pages can render a setup notice otherwise. */
+/** True when the configuration parses, so pages can render a setup notice otherwise. */
 export function isConfigured(): boolean {
   try {
     serverEnv();
@@ -65,20 +66,16 @@ export function isProductionDeployment(): boolean {
 }
 
 /**
- * The demo payment adapter is available only outside production. The database enforces the same
- * rule independently (private.settings.demo_payments_enabled is never set in production).
+ * The demo payment adapter simulates a provider and never collects money. This deployment is a
+ * public demo, so it is available in every environment while PAYMENT_PROVIDER is `demo`.
  */
 export function demoPaymentsAllowed(): boolean {
-  return serverEnv().PAYMENT_PROVIDER === "demo" && !isProductionDeployment();
+  return serverEnv().PAYMENT_PROVIDER === "demo";
 }
 
-/** Demo mode drives the persistent "demo data" banner. */
+/** The whole deployment is a demo with fictional data; the banner is always shown. */
 export function isDemoMode(): boolean {
-  try {
-    return demoPaymentsAllowed();
-  } catch {
-    return false;
-  }
+  return true;
 }
 
 export function appUrl(): URL {

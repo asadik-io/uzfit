@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { redirect } from "next/navigation";
 import { AuthShell } from "@/features/auth/auth-shell";
+import { DemoAccounts } from "@/features/auth/demo-accounts";
 import { LoginForm } from "@/features/auth/login-form";
 import { getViewer } from "@/lib/auth";
 import { isDomainErrorCode } from "@/lib/errors";
@@ -43,6 +44,7 @@ export default async function LoginPage({ params, searchParams }: PageProps<"/[l
       }
     >
       <LoginForm next={next} initialError={error} />
+      <DemoAccounts locale={locale} next={next || undefined} />
     </AuthShell>
   );
 }

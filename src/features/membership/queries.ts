@@ -1,6 +1,6 @@
 import "server-only";
 import { QueryError } from "@/features/discovery/queries";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 const HISTORY_LIMIT = 20;
 

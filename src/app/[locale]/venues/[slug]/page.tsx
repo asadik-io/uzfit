@@ -26,7 +26,7 @@ import type { Locale } from "@/lib/i18n/routing";
 import { localized, type LocalizedText } from "@/lib/localized";
 import { formatPhone } from "@/lib/phone";
 import { isDateString, localDateString, zonedTimeToUtc, isoWeekday } from "@/lib/time";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/venues/[slug]">): Promise<Metadata> {
   const { locale, slug } = (await params) as { locale: Locale; slug: string };

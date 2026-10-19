@@ -1,7 +1,7 @@
 import "server-only";
 import { QueryError } from "@/features/discovery/queries";
 import type { LocalizedText } from "@/lib/localized";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 /** A published plan version with its eligible (public) venues, for order review. */
 export async function getCheckoutPlan(planVersionId: string) {

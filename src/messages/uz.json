@@ -68,7 +68,7 @@
     "en": "English"
   },
   "demo": {
-    "banner": "Demo muhit: toʻqima maskanlar va namunaviy narxlar. Haqiqiy toʻlovlar qabul qilinmaydi.",
+    "banner": "Ochiq demo: toʻqima maskanlar va namunaviy narxlar, haqiqiy toʻlovlar yoʻq. Maʼlumotlar xotirada saqlanadi va vaqti-vaqti bilan qayta tiklanadi.",
     "badge": "Demo",
     "photo": "Demo rasm"
   },
@@ -107,11 +107,23 @@
       "pending": "Kirilmoqda…",
       "forgot": "Parolni unutdingizmi?",
       "noAccount": "UzFitʼda yangimisiz?",
-      "signUpLink": "Hisob yaratish"
+      "signUpLink": "Hisob yaratish",
+      "demoTitle": "Demo hisob bilan sinab koʻring",
+      "demoText": "Bir bosishda kirasiz. Barcha demo hisoblar uchun parol:",
+      "demoSignIn": "{name} sifatida kirish",
+      "demoAccounts": {
+        "member": "Aʼzo · faol tarif, kelgusi va oʻtgan yozuvlar",
+        "memberNew": "Yangi aʼzo · hali tarif yoʻq, demo toʻlovni sinab koʻring",
+        "memberExpired": "Aʼzo · muddati tugagan tarif",
+        "memberRevoked": "Aʼzo · bekor qilingan tarif",
+        "manager": "Hamkor menejeri · jadval, roʻyxatlar, maskan qoralamalari",
+        "reception": "Maskan qabulxonasi · QR skaner",
+        "admin": "Platforma administratori · tasdiqlar, tariflar, toʻlovlar, audit"
+      }
     },
     "signup": {
       "title": "Hisob yaratish",
-      "description": "Elektron pochta orqali roʻyxatdan oʻting — tasdiqlash havolasini yuboramiz.",
+      "description": "Elektron pochta orqali roʻyxatdan oʻting. Bu demoda hisobingiz darhol tayyor boʻladi, tasdiqlash xati yuborilmaydi.",
       "submit": "Hisob yaratish",
       "pending": "Hisob yaratilmoqda…",
       "haveAccount": "Hisobingiz bormi?",
@@ -122,7 +134,7 @@
     },
     "forgot": {
       "title": "Parolni tiklash",
-      "description": "Elektron pochtangizni kiriting — yangi parol oʻrnatish havolasini yuboramiz.",
+      "description": "Bu demo xat yubormaydi. Demo hisoblar kirish sahifasida koʻrsatilgan umumiy paroldan foydalanadi.",
       "submit": "Havolani yuborish",
       "pending": "Yuborilmoqda…",
       "sentTitle": "Pochtangizni tekshiring",

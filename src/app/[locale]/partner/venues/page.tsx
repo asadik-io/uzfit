@@ -11,7 +11,7 @@ import { formatDateTime } from "@/lib/format";
 import { Link } from "@/lib/i18n/navigation";
 import { DEFAULT_TIMEZONE, type Locale } from "@/lib/i18n/routing";
 import { localized } from "@/lib/localized";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/partner/venues">): Promise<Metadata> {
   const { locale } = await params;

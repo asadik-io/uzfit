@@ -1,7 +1,7 @@
 import "server-only";
 import { QueryError } from "@/features/discovery/queries";
-import { createClient } from "@/lib/supabase/server";
-import type { Database } from "@/lib/supabase/database.types";
+import { createClient } from "@/lib/db/server";
+import type { Database } from "@/lib/db/database.types";
 
 export const BOOKINGS_PAGE_SIZE = 10;
 

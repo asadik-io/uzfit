@@ -4,7 +4,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { getViewer } from "@/lib/auth";
 import { type ActionResult, fail, toDomainError } from "@/lib/errors";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 const input = z.object({ venueId: z.guid(), favorite: z.boolean() });
 

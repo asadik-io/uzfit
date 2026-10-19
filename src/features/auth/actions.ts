@@ -8,7 +8,9 @@ import { isLocale, type Locale } from "@/lib/i18n/routing";
 import { consumeRateLimit } from "@/lib/rate-limit";
 import { bucketHash, clientIp, logEvent } from "@/lib/request";
 import { safeInternalPath, safeLocalePath } from "@/lib/safe-redirect";
-import { createClient } from "@/lib/supabase/server";
+import { demoPassword } from "@/lib/db/auth";
+import { type DemoAccount, demoAccountByKey } from "@/lib/db/demo-accounts";
+import { createClient } from "@/lib/db/server";
 import { emailSchema, passwordSchema } from "@/lib/validation/auth";
 
 function localeOf(value: FormDataEntryValue | null): Locale {
@@ -171,4 +173,39 @@ export async function signOutAction(formData: FormData): Promise<void> {
   const supabase = await createClient();
   await supabase.auth.signOut({ scope: "local" });
   redirect(`/${locale}?notice=signed_out`);
+}
+
+function demoHome(account: DemoAccount, locale: Locale): string {
+  switch (account.roleKey) {
+    case "member":
+      return `/${locale}/bookings`;
+    case "memberNew":
+      return `/${locale}/plans`;
+    case "memberExpired":
+    case "memberRevoked":
+      return `/${locale}/membership`;
+    case "manager":
+    case "reception":
+      return `/${locale}/partner`;
+    case "admin":
+      return `/${locale}/admin`;
+    default:
+      return `/${locale}/explore`;
+  }
+}
+
+/** One-click sign-in with one of the demo accounts listed on the sign-in page. */
+export async function demoSignInAction(formData: FormData): Promise<void> {
+  const locale = localeOf(formData.get("locale"));
+  const account = demoAccountByKey(String(formData.get("account") ?? ""));
+  if (!account) {
+    redirect(`/${locale}/login?error=INVALID_CREDENTIALS`);
+  }
+  const supabase = await createClient();
+  const { error } = await supabase.auth.signInWithPassword({ email: account.email, password: demoPassword() });
+  if (error) {
+    logEvent("warn", "auth.demo_sign_in_failed", { account: account.key, code: error.code ?? String(error.status) });
+    redirect(`/${locale}/login?error=INVALID_CREDENTIALS`);
+  }
+  redirect(safeLocalePath(formData.get("next"), demoHome(account, locale)));
 }

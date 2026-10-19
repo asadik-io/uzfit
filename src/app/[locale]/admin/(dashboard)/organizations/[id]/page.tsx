@@ -11,9 +11,13 @@ import { ActionDialog, ActionForm } from "@/features/admin/action-form";
 import { removeOrgMemberAction, setOrganizationStatusAction, setOrgMemberAction } from "@/features/admin/actions";
 import { findUsers, getOrganization } from "@/features/admin/queries";
 import { requireAdmin } from "@/lib/auth";
+import type { Database } from "@/lib/db/database.types";
 import { Link } from "@/lib/i18n/navigation";
 import type { Locale } from "@/lib/i18n/routing";
 import { localized } from "@/lib/localized";
+
+type OrgRole = Database["public"]["Enums"]["org_role"];
+type VenuePublicationStatus = Database["public"]["Enums"]["venue_publication_status"];
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/admin/organizations/[id]">): Promise<Metadata> {
   const { locale } = await params;
@@ -89,7 +93,7 @@ export default async function OrganizationPage({
                   <Link href={`/admin/users/${member.user_id}`} className="min-w-0 flex-1 font-medium hover:underline">
                     {member.profile?.display_name || member.user_id}
                   </Link>
-                  <Badge variant="secondary">{t(`partner.role.${member.role}`)}</Badge>
+                  <Badge variant="secondary">{t(`partner.role.${member.role as OrgRole}`)}</Badge>
                   <ActionDialog
                     trigger={t("admin.orgs.remove")}
                     triggerVariant="ghost"
@@ -174,7 +178,9 @@ export default async function OrganizationPage({
               {org.venues.map((venue) => (
                 <li key={venue.id} className="flex flex-wrap items-center gap-2">
                   <span className="font-medium">{localized(venue.name, locale)}</span>
-                  <Badge variant="secondary">{t(`partner.venueStatus.${venue.publication_status}`)}</Badge>
+                  <Badge variant="secondary">
+                    {t(`partner.venueStatus.${venue.publication_status as VenuePublicationStatus}`)}
+                  </Badge>
                   {venue.operational_status === "suspended" ? (
                     <Badge variant="destructive">{t("partner.venueStatus.suspended")}</Badge>
                   ) : null}

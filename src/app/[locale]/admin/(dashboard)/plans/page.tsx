@@ -8,9 +8,12 @@ import { AdminHeader } from "@/features/admin/admin-header";
 import { PlanVersionForm } from "@/features/admin/plan-version-form";
 import { listPlans } from "@/features/admin/queries";
 import { requireAdmin } from "@/lib/auth";
+import type { Database } from "@/lib/db/database.types";
 import { formatMoney } from "@/lib/format";
 import type { Locale } from "@/lib/i18n/routing";
 import { localized, type LocalizedText } from "@/lib/localized";
+
+type PlanVersionStatus = Database["public"]["Enums"]["plan_version_status"];
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/admin/plans">): Promise<Metadata> {
   const { locale } = await params;
@@ -88,7 +91,7 @@ export default async function AdminPlansPage({ params }: PageProps<"/[locale]/ad
                                       : "secondary"
                                 }
                               >
-                                {t(`admin.plans.status.${version.status}`)}
+                                {t(`admin.plans.status.${version.status as PlanVersionStatus}`)}
                               </Badge>
                             </td>
                             <td className="py-2 pr-3 text-muted-foreground">
@@ -162,7 +165,7 @@ export default async function AdminPlansPage({ params }: PageProps<"/[locale]/ad
                       bookingWindowDays: latest?.booking_window_days ?? 7,
                       freeCancellationMinutes: latest?.free_cancellation_minutes ?? 120,
                       isDemo: latest?.is_demo ?? false,
-                      venueIds: latest?.plan_version_venues.map((v) => v.venue_id) ?? [],
+                      venueIds: latest?.plan_version_venues.map((v: { venue_id: string }) => v.venue_id) ?? [],
                     }}
                   />
                 </details>

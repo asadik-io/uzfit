@@ -1,6 +1,6 @@
 import "server-only";
 import { QueryError } from "@/features/discovery/queries";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 /*
  * Admin reads. Row Level Security grants platform admins (with the second factor when required)

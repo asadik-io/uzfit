@@ -15,7 +15,7 @@ import { Link } from "@/lib/i18n/navigation";
 import { DEFAULT_TIMEZONE, type Locale } from "@/lib/i18n/routing";
 import { localized } from "@/lib/localized";
 import { renderTimeMs } from "@/lib/server-time";
-import type { Database } from "@/lib/supabase/database.types";
+import type { Database } from "@/lib/db/database.types";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/membership">): Promise<Metadata> {
   const { locale } = await params;

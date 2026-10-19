@@ -1,8 +1,8 @@
 import createIntlMiddleware from "next-intl/middleware";
 import { type NextRequest, NextResponse } from "next/server";
+import { readSession } from "@/lib/db/proxy";
 import { isLocale, routing } from "@/lib/i18n/routing";
 import { buildContentSecurityPolicy } from "@/lib/security/csp";
-import { refreshSupabaseSession } from "@/lib/supabase/proxy";
 
 const handleLocaleRouting = createIntlMiddleware(routing);
 
@@ -25,9 +25,9 @@ function privateSectionLocale(pathname: string): string | null {
 
 /**
  * Runs before every page request:
- *  1. assigns a request ID (forwarded to the database for audit correlation),
+ *  1. assigns a request ID (kept in audit entries),
  *  2. creates a CSP nonce,
- *  3. refreshes the Supabase session (verified with getClaims) and forwards fresh cookies,
+ *  3. verifies the signed session cookie,
  *  4. redirects signed-out visitors away from private sections (a real 307 even for streamed pages),
  *  5. applies locale routing.
  * Authorization is never decided here: every page, Server Action, and database function checks it.
@@ -38,7 +38,6 @@ export async function proxy(request: NextRequest) {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL ?? "";
   const csp = buildContentSecurityPolicy({
     nonce,
-    supabaseUrl: process.env.NEXT_PUBLIC_SUPABASE_URL,
     isDevelopment: process.env.NODE_ENV === "development",
     upgradeInsecure: appUrl.startsWith("https://"),
   });
@@ -48,7 +47,7 @@ export async function proxy(request: NextRequest) {
   request.headers.set("x-nonce", nonce);
   request.headers.set("content-security-policy", csp);
 
-  const session = await refreshSupabaseSession(request);
+  const session = await readSession(request);
   const privateLocale = privateSectionLocale(request.nextUrl.pathname);
   const response =
     privateLocale && !session.authenticated
@@ -60,12 +59,6 @@ export async function proxy(request: NextRequest) {
         )
       : handleLocaleRouting(request);
 
-  for (const { name, value, options } of session.cookies) {
-    response.cookies.set(name, value, options);
-  }
-  for (const [key, value] of Object.entries(session.headers)) {
-    response.headers.set(key, value);
-  }
   response.headers.set("content-security-policy", csp);
   response.headers.set("x-request-id", requestId);
   return response;
@@ -74,8 +67,8 @@ export async function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     {
-      // Pages only: API routes, the auth callback, Next.js assets, and static files are excluded.
-      source: "/((?!api|auth|_next/static|_next/image|.*\\..*).*)",
+      // Pages only: API routes, uploaded media, Next.js assets, and static files are excluded.
+      source: "/((?!api|media|_next/static|_next/image|.*\\..*).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },

@@ -1,6 +1,6 @@
 import { useTranslations } from "next-intl";
 import { Badge, type BadgeProps } from "@/components/ui/badge";
-import type { Database } from "@/lib/supabase/database.types";
+import type { Database } from "@/lib/db/database.types";
 
 type BookingState = Database["public"]["Enums"]["booking_state"];
 

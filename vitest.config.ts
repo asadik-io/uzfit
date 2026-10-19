@@ -20,19 +20,6 @@ export default defineConfig({
           environment: "node",
         },
       },
-      {
-        extends: true,
-        test: {
-          name: "db",
-          include: ["tests/db/**/*.test.ts"],
-          environment: "node",
-          globalSetup: ["tests/db/global-setup.ts"],
-          // Files share operator flags (private.settings), so they run one at a time.
-          fileParallelism: false,
-          testTimeout: 60_000,
-          hookTimeout: 60_000,
-        },
-      },
     ],
   },
 });

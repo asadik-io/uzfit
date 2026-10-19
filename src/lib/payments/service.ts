@@ -1,7 +1,7 @@
 import "server-only";
 import { logEvent } from "@/lib/request";
-import { createAdminClient } from "@/lib/supabase/admin";
-import type { Database } from "@/lib/supabase/database.types";
+import { createAdminClient } from "@/lib/db/admin";
+import type { Database } from "@/lib/db/database.types";
 import { adapterFor } from "./index";
 import type { NormalizedPaymentEvent, PaymentProviderId } from "./types";
 

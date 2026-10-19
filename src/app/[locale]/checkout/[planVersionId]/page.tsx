@@ -16,7 +16,7 @@ import { Link } from "@/lib/i18n/navigation";
 import { DEFAULT_TIMEZONE, type Locale } from "@/lib/i18n/routing";
 import { localized } from "@/lib/localized";
 import { checkoutAdapter } from "@/lib/payments";
-import { hasAdminClient } from "@/lib/supabase/admin";
+import { hasAdminClient } from "@/lib/db/admin";
 
 export async function generateMetadata({ params }: PageProps<"/[locale]/checkout/[planVersionId]">): Promise<Metadata> {
   const { locale } = await params;

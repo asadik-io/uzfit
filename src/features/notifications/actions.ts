@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { getViewer } from "@/lib/auth";
 import { type ActionResult, fail, toDomainError } from "@/lib/errors";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 /** Marks all of the member's notifications as read. */
 export async function markAllNotificationsReadAction(): Promise<ActionResult> {

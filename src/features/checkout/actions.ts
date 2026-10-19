@@ -10,8 +10,8 @@ import { checkoutAdapter } from "@/lib/payments";
 import { signDemoEvent } from "@/lib/payments/demo";
 import { processPaymentCallback } from "@/lib/payments/service";
 import { logEvent, requestId } from "@/lib/request";
-import { hasAdminClient } from "@/lib/supabase/admin";
-import { createClient } from "@/lib/supabase/server";
+import { hasAdminClient } from "@/lib/db/admin";
+import { createClient } from "@/lib/db/server";
 
 const localeField = z.string().refine(isLocale);
 const startSchema = z.object({ planVersionId: z.guid(), locale: localeField });

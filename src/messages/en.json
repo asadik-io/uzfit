@@ -68,7 +68,7 @@
     "en": "English"
   },
   "demo": {
-    "banner": "Demo environment: fictional venues and sample prices. No real payments are collected.",
+    "banner": "Public demo: fictional venues and sample prices, no real payments. Data lives in memory and resets now and then.",
     "badge": "Demo",
     "photo": "Demo image"
   },
@@ -107,11 +107,23 @@
       "pending": "Signing in…",
       "forgot": "Forgot your password?",
       "noAccount": "New to UzFit?",
-      "signUpLink": "Create an account"
+      "signUpLink": "Create an account",
+      "demoTitle": "Try it with a demo account",
+      "demoText": "One tap signs you in. Every demo account uses this password:",
+      "demoSignIn": "Sign in as {name}",
+      "demoAccounts": {
+        "member": "Member · active plan with upcoming and past bookings",
+        "memberNew": "New member · no plan yet, try the demo checkout",
+        "memberExpired": "Member · expired plan",
+        "memberRevoked": "Member · revoked plan",
+        "manager": "Partner manager · schedule, rosters, venue drafts",
+        "reception": "Venue reception · QR scanner",
+        "admin": "Platform admin · approvals, plans, payments, audit log"
+      }
     },
     "signup": {
       "title": "Create your account",
-      "description": "Sign up with your email. We will send you a confirmation link.",
+      "description": "Sign up with your email. In this demo your account is ready right away, no confirmation email.",
       "submit": "Create account",
       "pending": "Creating account…",
       "haveAccount": "Already have an account?",
@@ -122,7 +134,7 @@
     },
     "forgot": {
       "title": "Reset your password",
-      "description": "Enter your email and we will send you a link to choose a new password.",
+      "description": "This demo sends no emails. Demo accounts use the shared password shown on the sign-in page.",
       "submit": "Send reset link",
       "pending": "Sending…",
       "sentTitle": "Check your email",

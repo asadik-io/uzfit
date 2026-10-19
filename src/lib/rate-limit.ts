@@ -1,7 +1,7 @@
 import "server-only";
 import { isProductionDeployment } from "@/lib/env";
 import { logEvent } from "@/lib/request";
-import { createAdminClient, hasAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, hasAdminClient } from "@/lib/db/admin";
 
 /**
  * Persistent fixed-window rate limit stored in Postgres (shared by every serverless instance).

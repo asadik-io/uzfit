@@ -1,5 +1,5 @@
 import type { Locale } from "@/lib/i18n/routing";
-import type { Database } from "@/lib/supabase/database.types";
+import type { Database } from "@/lib/db/database.types";
 
 export type PaymentProviderId = Database["public"]["Enums"]["payment_provider"];
 export type PaymentStatus = Database["public"]["Enums"]["payment_status"];

@@ -6,7 +6,7 @@ import { getViewer } from "@/lib/auth";
 import { type ActionResult, fail, toDomainError } from "@/lib/errors";
 import { isLocale, type Locale } from "@/lib/i18n/routing";
 import { normalizePhone } from "@/lib/phone";
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/db/server";
 
 /** Remembers the interface language on the profile and in auth metadata (used by emails). */
 export async function setPreferredLocaleAction(locale: Locale): Promise<void> {
